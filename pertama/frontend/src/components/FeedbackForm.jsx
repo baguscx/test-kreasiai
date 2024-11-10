@@ -9,6 +9,9 @@ const FeedbackForm = () => {
   const [message, setMessage] = useState("");
   const [photo, setPhoto] = useState("");
   const [loading, setLoading] = useState(false);
+  const [nameError, setNameError] = useState(""); // State for name validation error
+  const [emailError, setEmailError] = useState(""); // State for email validation error
+  const [messageError, setMessageError] = useState(""); // State for message validation error
 
   // Mengambil foto random dari Lorem Picsum
   useEffect(() => {
@@ -19,8 +22,42 @@ const FeedbackForm = () => {
     fetchPhoto();
   }, []);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let isValid = true;
+
+    // Validate name
+    if (name.trim() === "") {
+      setNameError("Name cannot be empty.");
+      isValid = false;
+    } else {
+      setNameError("");
+    }
+
+    // Validate email
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    // Validate message length
+    if (message.length < 10) {
+      setMessageError("Message must be at least 10 characters long.");
+      isValid = false;
+    } else {
+      setMessageError("");
+    }
+
+    if (!isValid) return;
+
     setLoading(true);
 
     const feedbackData = {
@@ -72,9 +109,12 @@ const FeedbackForm = () => {
               className={clsx(
                 "mt-2 block w-full rounded-md border-gray-300 py-2 px-4 text-sm text-gray-800",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                "border" // Add this for the default border
+                "border"
               )}
             />
+            {nameError && (
+              <p className="mt-2 text-sm text-red-600">{nameError}</p>
+            )}
           </Field>
         </div>
 
@@ -95,9 +135,12 @@ const FeedbackForm = () => {
               className={clsx(
                 "mt-2 block w-full rounded-md border-gray-300 py-2 px-4 text-sm text-gray-800",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                "border" // Add this for the default border
+                "border"
               )}
             />
+            {emailError && (
+              <p className="mt-2 text-sm text-red-600">{emailError}</p>
+            )}
           </Field>
         </div>
 
@@ -118,10 +161,13 @@ const FeedbackForm = () => {
               className={clsx(
                 "mt-2 block w-full rounded-md border-gray-300 py-2 px-4 text-sm text-gray-800",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                "border" // Add this for the default border
+                "border"
               )}
               required
             ></textarea>
+            {messageError && (
+              <p className="mt-2 text-sm text-red-600">{messageError}</p>
+            )}
           </Field>
         </div>
 
